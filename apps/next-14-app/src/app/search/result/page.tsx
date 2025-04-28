@@ -1,5 +1,6 @@
 import { getQueryClient } from "@/utils/getQueryClient";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
+import { format } from "date-fns";
 import SearchResult from "./SearchResult";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
@@ -21,7 +22,10 @@ export default async function Page(props: { searchParams: SearchParams }) {
     queryKey: ["search", "result", page],
     queryFn: async () => {
       console.log(
-        `🔍 [${new Date().toString()}] Prefetching search result for ${page}...`
+        `🔍 [${format(
+          new Date(),
+          "HH:mm:ss.SSS"
+        )}] Prefetching search result for ${page}...`
       );
       const response = await fetch(
         `https://jsonplaceholder.typicode.com/posts/${page}`

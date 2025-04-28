@@ -3,10 +3,12 @@
 import { useSuspenseQuery } from "@tanstack/react-query";
 import { ReactElement } from "react";
 import { useRouter } from "next/navigation";
+import { format } from "date-fns";
 
 type Props = {
   page?: number;
 };
+
 export default function SearchResult(props: Props): ReactElement {
   const { page = 1 } = props;
   const router = useRouter();
@@ -15,7 +17,10 @@ export default function SearchResult(props: Props): ReactElement {
     queryKey: ["search", "result", page],
     queryFn: async () => {
       console.log(
-        `🔍 [${new Date().toString()}] querying search result for ${page}...`
+        `🔍 [${format(
+          new Date(),
+          "HH:mm:ss.SSS"
+        )}] querying search result for ${page}...`
       );
       const response = await fetch(
         `https://jsonplaceholder.typicode.com/posts/${page}`
@@ -29,7 +34,7 @@ export default function SearchResult(props: Props): ReactElement {
     "⏰ %cdataUpdatedAt %c%s",
     "color:red",
     "color:yellow",
-    new Date(dataUpdatedAt).toString()
+    format(dataUpdatedAt, "HH:mm:ss.SSS")
   );
 
   return (
