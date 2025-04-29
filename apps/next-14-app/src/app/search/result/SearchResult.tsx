@@ -1,9 +1,10 @@
 "use client";
 
 import { useSuspenseQuery } from "@tanstack/react-query";
-import { ReactElement } from "react";
+import { ReactElement, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
+import { navigateToPage } from "./navigateToPage";
 
 type Props = {
   page?: number;
@@ -12,7 +13,12 @@ type Props = {
 export default function SearchResult(props: Props): ReactElement {
   const { page = 1 } = props;
   const router = useRouter();
-  console.log("🎨 render SearchResult Client component", page);
+  const [inputPage, setInputPage] = useState<string>("1");
+  const action = navigateToPage.bind(null, Number(inputPage));
+  const formRef = useRef<HTMLFormElement>(null);
+
+  console.log("🎨 render SearchResult Client component", page, inputPage);
+
   const { data, dataUpdatedAt, refetch } = useSuspenseQuery({
     queryKey: ["search", "result", page],
     queryFn: async () => {
@@ -56,6 +62,28 @@ export default function SearchResult(props: Props): ReactElement {
         />
         <button>페이지 이동</button>
       </form>
+      <hr />
+      <form action={action} ref={formRef}>
+        <legend>Server 액션 이동</legend>
+        <input
+          className="text-black"
+          type="number"
+          name="page"
+          value={inputPage}
+          onInput={(e) => {
+            console.log("🌴 onInput", e.currentTarget.value);
+            setInputPage(e.currentTarget.value);
+          }}
+        />
+        <button>페이지 이동</button>
+      </form>
+      <button
+        onClick={() => {
+          formRef.current?.requestSubmit();
+        }}
+      >
+        Form submit by js
+      </button>
       <div>Page: {page}</div>
       <button onClick={() => refetch()}>refetch</button>
       <pre>{JSON.stringify(data, null, 2)}</pre>
