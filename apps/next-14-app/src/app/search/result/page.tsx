@@ -4,6 +4,7 @@ import { format } from "date-fns";
 import SearchResult from "./SearchResult";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import ALink from "@/component/link/ALink";
 
 type SearchParams = {
   page?: string;
@@ -13,6 +14,10 @@ export default async function Page(props: { searchParams: SearchParams }) {
   const searchParams = await props.searchParams;
   const parsed = Number(searchParams.page);
   const page = Number.isNaN(parsed) ? 1 : parsed;
+
+  if (page > 300) {
+    redirect("/search/result?page=13");
+  }
 
   console.log("🎨 render search/result Page component", page);
 
@@ -58,6 +63,23 @@ export default async function Page(props: { searchParams: SearchParams }) {
       <Suspense fallback={<div>Loading...</div>}>
         <SearchResult page={page} />
       </Suspense>
+      <ALink
+        href="http://localhost:4000/search/result"
+        target={{
+          _blank: {
+            type: "priviaDomain",
+            pathPattern: "search/result",
+          },
+        }}
+        newWindowBehaviorInApp={{
+          inAppModal: {
+            type: "absoluteUrl",
+            urlPattern: [String.raw`^http://localhost:4000`],
+          },
+        }}
+      >
+        Link
+      </ALink>
     </HydrationBoundary>
   );
 }

@@ -8,6 +8,7 @@ import { navigateToPage } from "./navigateToPage";
 
 type Props = {
   page?: number;
+  regex?: RegExp;
 };
 
 export default function SearchResult(props: Props): ReactElement {
