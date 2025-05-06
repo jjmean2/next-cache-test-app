@@ -1,34 +1,33 @@
 import { getQueryClient } from "@/utils/getQueryClient";
 import { dehydrate, HydrationBoundary } from "@tanstack/react-query";
-import { format } from "date-fns";
 import SearchResult from "./SearchResult";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
+import * as c from "@/utils/ansiColors";
+import { log } from "@/utils/log";
+import { SubmitButton } from "./SubmitButton";
+
+export const dynamic = "force-dynamic";
 
 type SearchParams = {
   page?: string;
 };
 
 export default async function Page(props: { searchParams: SearchParams }) {
+  log("%c🎨 render search/result Page component", c.magenta);
   const searchParams = await props.searchParams;
   const parsed = Number(searchParams.page);
   const page = Number.isNaN(parsed) ? 1 : parsed;
-
-  console.log("🎨 render search/result Page component", page);
 
   const queryClient = getQueryClient();
 
   queryClient.prefetchQuery({
     queryKey: ["search", "result", page],
     queryFn: async () => {
-      console.log(
-        `🔍 [${format(
-          new Date(),
-          "HH:mm:ss.SSS"
-        )}] Prefetching search result for ${page}...`
-      );
+      log(`%cPrefetching search result for ${page}...`, c.blue);
       const response = await fetch(
-        `https://jsonplaceholder.typicode.com/posts/${page}`
+        `https://jsonplaceholder.typicode.com/posts/${page}`,
+        { cache: "no-store" }
       );
       const data = await response.json();
       return data;
@@ -39,21 +38,21 @@ export default async function Page(props: { searchParams: SearchParams }) {
 
   async function action(formData: FormData) {
     "use server";
-    console.log("🎨 action", formData);
+    log("%c🎨 action%c", c.green, c.reset, formData);
     redirect("/search/result?page=" + formData.get("page"));
   }
 
   return (
     <HydrationBoundary state={state}>
       <form action={action}>
-        <legend>Server 이동</legend>
+        <legend>Server form action (redirect)</legend>
         <input
           className="text-black"
           type="number"
           name="page"
           defaultValue={page}
         />
-        <button>페이지 이동</button>
+        <SubmitButton>페이지 이동</SubmitButton>
       </form>
       <Suspense fallback={<div>Loading...</div>}>
         <SearchResult page={page} />
