@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import SearchResult from "./SearchResult";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import ALink from "@/component/link/ALink";
+import Link from "next/link";
 
 type SearchParams = {
   page?: string;
@@ -60,26 +60,10 @@ export default async function Page(props: { searchParams: SearchParams }) {
         />
         <button>페이지 이동</button>
       </form>
-      <Suspense fallback={<div>Loading...</div>}>
+      <Suspense>
         <SearchResult page={page} />
       </Suspense>
-      <ALink
-        href="http://localhost:4000/search/result"
-        target={{
-          _blank: {
-            type: "priviaDomain",
-            pathPattern: "search/result",
-          },
-        }}
-        newWindowBehaviorInApp={{
-          inAppModal: {
-            type: "absoluteUrl",
-            urlPattern: [String.raw`^http://localhost:4000`],
-          },
-        }}
-      >
-        Link
-      </ALink>
+      <Link href="../result">Link</Link>
     </HydrationBoundary>
   );
 }
