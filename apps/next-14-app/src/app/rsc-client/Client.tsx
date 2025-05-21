@@ -1,10 +1,18 @@
 "use client";
 import { useRouter } from "next/navigation";
-import { ReactElement, use, useReducer, useRef, useState } from "react";
+import {
+  ReactElement,
+  use,
+  useEffect,
+  useLayoutEffect,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import ValueRef from "./ValueRef";
 
 async function getRandomNumber() {
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  await new Promise((resolve) => setTimeout(resolve, 3000));
   return Math.floor(Math.random() * 100);
 }
 
@@ -12,7 +20,7 @@ interface Props {
   initialState?: number;
 }
 
-let promise = getRandomNumber();
+let promise: Promise<number> | undefined;
 
 export default function Client(props: Props): ReactElement {
   const { initialState = 0 } = props;
@@ -22,15 +30,35 @@ export default function Client(props: Props): ReactElement {
   console.log("🖌️ render [Client]", initialState);
 
   const [state, setState] = useState(() => {
-    console.log("    📌 [Client] state 초기화", initialState);
-    return initialState;
+    const value = Math.floor(Math.random() * 100);
+    console.log("    📌 [Client] state 초기화", value);
+    return value;
   });
 
-  const ref = useRef(new ValueRef("Content", initialState));
+  const ref = useRef(new ValueRef("Client", Math.floor(Math.random() * 100)));
 
   const router = useRouter();
 
-  const clientValue = use(promise);
+  useLayoutEffect(() => {
+    console.log("    ✨ [Client] useLayoutEffect");
+    return () => {
+      console.log("    🧹 [Client] useLayoutEffect cleanup");
+    };
+  }, []);
+
+  useEffect(() => {
+    console.log("    ✨ [Client] useEffect");
+    return () => {
+      console.log("    🧹 [Client] useEffect cleanup");
+    };
+  }, []);
+
+  const clientValue = use((promise ??= getRandomNumber()));
+  console.log(
+    "    ⭐ [Client] clientValue",
+    clientValue,
+    typeof window === "undefined" ? "in server" : "in client"
+  );
 
   return (
     <div>
