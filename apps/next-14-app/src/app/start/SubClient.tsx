@@ -231,9 +231,7 @@ export default function SubClient(): ReactElement {
         <div>
           <button
             onClick={() => {
-              startTransition(() => {
-                navigateToPage(page - 1);
-              });
+              navigateToPage(page - 1);
             }}
           >
             decrement by action
@@ -242,9 +240,7 @@ export default function SubClient(): ReactElement {
         <div>
           <button
             onClick={() => {
-              startTransition(() => {
-                navigateToPage(page + 1);
-              });
+              navigateToPage(page + 1);
             }}
           >
             increment by action
